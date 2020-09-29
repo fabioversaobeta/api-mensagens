@@ -26,7 +26,10 @@ class StartWith implements Rule
      */
     public function passes($attribute, $value)
     {
-        return strval(substr($value, 0, 1)) == strval($this->start);
+        $val1 = intval(substr($value, 0, 1));
+        $val2 = intval($this->start);
+
+        return ($val1 == $val2 ? true : false);
     }
 
     /**

@@ -26,7 +26,10 @@ class SecondDigitGreaterThan implements Rule
      */
     public function passes($attribute, $value)
     {
-        return intval(substr($value, 1, 1)) > intval($this->number);
+        $val1 = intval(substr($value, 1, 1));
+        $val2 = intval($this->number);
+
+        return ($val1 > $val2 ? true : false);
     }
 
     /**

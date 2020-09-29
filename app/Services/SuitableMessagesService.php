@@ -22,6 +22,9 @@ class SuitableMessagesService
     private $geralRules;
     private $phoneRules;
 
+    /**
+     * Inicia regras que irão validar as mensagens
+     */
     public function __construct()
     {
         $this->geralRules = [
@@ -43,10 +46,12 @@ class SuitableMessagesService
 
     public function suitables($lines)
     {
+        // Services
         $convertLinesService = new ConvertLinesService();
         $validatorService = new ValidatorService();
         $getBrokerService = new GetBrokerService();
 
+        // Nome dos campos do arquivo para serem mapeados
         $headers = [
             "IDMENSAGEM",
             "DDD",
@@ -56,23 +61,21 @@ class SuitableMessagesService
             "MENSAGEM"
         ];
 
+        // Converte linhas do arquivo em uma Collection
         $messages = $convertLinesService->convertToColletion($lines, $headers);
 
-        // GERAL RULES
-
+        // Valida regras gerais para bloquear mensagens inválidas
         $filtered = $messages->validate($this->geralRules);
 
         // has bug here - ddd is not validated by unique
         $filtered = $filtered->sortBy('HORARIO_ENVIO')->unique('CELULAR');
 
-        // NUMBER RULES
-
+        // Valida regras para bloquear telefone inválido
         $phoneFiltered = $filtered->validate($this->phoneRules);
 
+        // retorna lista com IDMENSAGEM e IDBROKER
         $brokered = $getBrokerService->brokers($phoneFiltered);
 
         return $brokered;
-
-        // $messages = BrokerService::getBroker($filtered);
     }
 }

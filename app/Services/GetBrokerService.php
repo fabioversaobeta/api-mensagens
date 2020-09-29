@@ -6,6 +6,9 @@ class GetBrokerService
 {
     private $brokers;
 
+    /**
+     * Lista de Operadores e seus respectivos Brokers
+     */
     public function __construct()
     {
         $this->brokers = [
@@ -17,6 +20,11 @@ class GetBrokerService
         ];
     }
 
+    /**
+     * Retorna uma lista contendo IDMENSAGEM e IDBLOKER
+     *
+     * @return Array
+     */
     public function brokers($list)
     {
         return $list->map(function ($value) {
@@ -27,6 +35,9 @@ class GetBrokerService
         });
     }
 
+    /**
+     * Retorna o Broker específico da operadora informada
+     */
     public function getBroker($operator)
     {
         return $this->brokers[$operator];
