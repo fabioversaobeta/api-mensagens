@@ -4,24 +4,48 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
-class PhoneNumberTest extends TestCase
+use App\Services\SuitableMessagesService;
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Collection;
+
+class RulesTest extends TestCase
 {
-    /*
-        o id_broker será definido conforme a operadora; (ver broker x operadora)
-    */
+    protected $suitableService;
+
+    public function setUp()
+    {
+        $this->suitableService = new SuitableMessagesService();
+    }
 
     /**
      * mensagens com telefone inválido deverão ser bloqueadas(DDD+NUMERO);
      *
      * @return void
      */
-    public function messagesWithInvalidPhoneShouldBeBlocked()
+    public function testMessagesWithInvalidPhoneShouldBeBlocked()
     {
-        $phone = '008376';
+        // $this->suitableService =  new SuitableMessagesService();
 
-        $idValid = validatePhoneNumberMethod($phone);
+        // Collection::macro('validate', function (array $rules) {
+        //     /** @var $this Collection */
+        //     return $this->values()->reject(function ($array) use ($rules) {
+        //         return Validator::make($array, $rules)->fails();
+        //     });
+        // });
 
-        $this->assertFalse($idValid);
+        $file = [
+            'e7b87f43-9aa8-414b-9cec-f28e653ac25e;69;84930612;CLARO;19:05:21;justo lacinia eget tincidunt eget',
+            'b7e2af69-ce52-4812-adf1-395c8875ad30;70;984930612;CLARO;19:05:21;justo lacinia eget tincidunt eget',
+            'c04096fe-2878-4485-886b-4a68a259bac5;21;924930612;CLARO;19:05:21;justo lacinia eget tincidunt eget',
+            'bff58d7b-8b4a-456a-b852-5a3e000c0e63;41;292930612;CLARO;19:05:21;justo lacinia eget tincidunt eget'
+        ];
+
+        $suitables = $this->suitableService->suitables($file);
+
+        $size = sizeof($suitables);
+
+        $this->assertEqual(0, $size);
     }
 
     /**
@@ -29,43 +53,56 @@ class PhoneNumberTest extends TestCase
      *
      * @return void
      */
-    public function messagesThatAreaOnTheBlacklistSouldBeBlockedTest()
+    public function testMessagesThatAreaOnTheBlacklistSouldBeBlockedTest()
     {
-        $phone = 41984395789;
-
-        $idValid = validPhoneNumberInBlacklist($phone);
-
-        $this->assertFalse($idValid);
-    }
-
-    /**
-     * mensagens para o estado de São Paulo deverão ser bloqueadas;
-     *
-     * @return void
-     */
-    public function messagesToTheStateOfSaoPauloSouldBeBlocked()
-    {
-        $phone = 11984395789;
-
-        $idValid = validPhoneNumberState($phone);
-
-        $this->assertFalse($idValid);
-    }
-
-    /**
-     * mensagens para o estado de São Paulo deverão ser bloqueadas;
-     *
-     * @return void
-     */
-    public function messagesScheduledAfter195959ShouldBeBlocked()
-    {
-        $message = [
-            "hour" => "20:00:00"
+        $file = [
+            'e7b87f43-9aa8-414b-9cec-f28e653ac25e;34;990171682;VIVO;18:35:20;dui luctus rutrum nulla tellus in sagittis dui',
+            'c04096fe-2878-4485-886b-4a68a259bac5;43;940513739;NEXTEL;14:54:16;nibh fusce lacus purus aliquet at feugiat'
         ];
 
-        $idValid = validMessageSchedule($message);
+        $suitables = $this->suitableService->suitables($file);
 
-        $this->assertFalse($idValid);
+        $size = sizeof($suitables);
+
+        $this->assertEqual(1, $size);
+    }
+
+    /**
+     * mensagens para o estado de São Paulo deverão ser bloqueadas;
+     *
+     * @return void
+     */
+    public function testMessagesToTheStateOfSaoPauloSouldBeBlockedTest()
+    {
+        $file = [
+            'bff58d7b-8b4a-456a-b852-5a3e000c0e63;12;996958849;NEXTEL;08:24:03;sapien sapien non mi integer ac neque duis bibendum',
+            'b7e2af69-ce52-4812-adf1-395c8875ad30;12;996958849;NEXTEL;09:24:03;sapien sapien non mi integer ac neque duis bibendum'
+        ];
+
+        $suitables = $this->suitableService->suitables($file);
+
+        $size = sizeof($suitables);
+
+        $this->assertEqual(0, $size);
+    }
+
+    /**
+     * mensagens para agendadas após às 19:59:59 serão bloqueadas;
+     *
+     * @return void
+     */
+    public function testMessagesScheduledAfter195959ShouldBeBlockedTest()
+    {
+        $file = [
+            'bff58d7b-8b4a-456a-b852-5a3e000c0e63;41;996958849;NEXTEL;21:24:03;sapien sapien non mi integer ac neque duis bibendum',
+            'b7e2af69-ce52-4812-adf1-395c8875ad30;41;996958849;NEXTEL;20:24:03;sapien sapien non mi integer ac neque duis bibendum'
+        ];
+
+        $suitables = $this->suitableService->suitables($file);
+
+        $size = sizeof($suitables);
+
+        $this->assertEqual(0, $size);
     }
 
     /**
@@ -73,15 +110,17 @@ class PhoneNumberTest extends TestCase
      *
      * @return void
      */
-    public function messagesWithMoreThan140CharactersMustBeBlocked()
+    public function testMessagesWithMoreThan140CharactersMustBeBlockedTest()
     {
-        $message = [
-            "text" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam malesuada eget dolor at vulputate. Cras sed felis sem. Sed quis tempus nisl. Must than 140"
+        $file = [
+            'd81b2696-8b62-4b8b-af82-586ce0875ebc;21;983522711;TIM;16:42:48;sit amet eros suspendisse accumsan tortor quis turpis sed ante sit amet eros suspendisse accumsan tortor quis turpis sed ante sit amet eros suspendisse accumsan tortor quis turpis sed ante'
         ];
 
-        $idValid = validMessageSize($message);
+        $suitables = $this->suitableService->suitables($file);
 
-        $this->assertFalse($idValid);
+        $size = sizeof($suitables);
+
+        $this->assertEqual(0, $size);
     }
 
     /**
@@ -90,37 +129,41 @@ class PhoneNumberTest extends TestCase
      *
      * @return void
      */
-    public function moreThanOneMessageToTheSameDestinationConsiderTheMessageWithTheShortestTime()
+    public function testMoreThanOneMessageToTheSameDestinationConsiderTheMessageWithTheShortestTimeTest()
     {
-        $messages = [
-            [
-                "phone" => 41984395789
-                "hour" => "12:00:00"
-            ],
-            [
-                "phone" => 41984395789
-                "hour" => "08:00:00"
-            ],
+        $file = [
+            'bff58d7b-8b4a-456a-b852-5a3e000c0e63;41;996958849;NEXTEL;15:24:03;sapien sapien non mi integer ac neque duis bibendum',
+            'b7e2af69-ce52-4812-adf1-395c8875ad30;41;996958849;NEXTEL;12:05:21;justo lacinia eget tincidunt eget'
         ];
 
-        $greater = [
-            [
-                "phone" => 41984395789
-                "hour" => "12:00:00"
-            ]
+        $suitables = $this->suitableService->suitables($file);
+
+        $id = $suitables[0]['IDMENSAGEM'];
+
+        $this->assertEqual('b7e2af69-ce52-4812-adf1-395c8875ad30', $id);
+    }
+
+    /**
+     * o id_broker será definido conforme a operadora;
+     *
+     * @return void
+     */
+    public function testBrokerWillBeDefinedAccordingToTheOperatorTest()
+    {
+        $file = [
+            'bff58d7b-8b4a-456a-b852-5a3e000c0e63;41;996958849;NEXTEL;15:24:03;sapien sapien non mi integer ac neque duis bibendum',
+            'b7e2af69-ce52-4812-adf1-395c8875ad30;70;949360613;CLARO;19:05:21;justo lacinia eget tincidunt eget',
+            'e7b87f43-9aa8-414b-9cec-f28e653ac25e;34;990171682;VIVO;18:35:20;dui luctus rutrum nulla tellus in sagittis dui'
         ];
 
-        $less = [
-            [
-                "phone" => 41984395789
-                "hour" => "08:00:00"
-            ]
-        ];
+        $suitables = $this->suitableService->suitables($file);
 
-        $shortestMessages = returnShortestTime($messages);
+        $idNextel = $suitables[0]['IDBROKER'];
+        $idClaro = $suitables[1]['IDBROKER'];
+        $idVivo = $suitables[2]['IDBROKER'];
 
-        $this->assertNotContain($greater, $shortestMessages);
-
-        $this->assertContain($less, $shortestMessages);
+        $this->assertEqual(3, $idNextel);
+        $this->assertEqual(2, $idClaro);
+        $this->assertEqual(1, $idVivo);
     }
 }

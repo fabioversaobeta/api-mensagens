@@ -6,12 +6,20 @@ use PHPUnit\Framework\TestCase;
 
 class PhoneNumberTest extends TestCase
 {
+    protected $suitableService;
+
+    // public function setUp() : void
+    // {
+    //     parent::setUp();
+    //     $this->suitableService = new SuitableMessagesService();
+    // }
+
     /**
      * DDD com 2 dígitos
      *
      * @return void
      */
-    public function dddWithTwoDigitsTest()
+    public function testDDDWithTwoDigits()
     {
         $ddd = 41;
 
@@ -23,7 +31,7 @@ class PhoneNumberTest extends TestCase
      *
      * @return void
      */
-    public function dddMustBeValidTest()
+    public function testDDDMustBeValid()
     {
         $listDDD = [
             11,12,13,14,15,16,17,18,19,21,22,24,27,28,31,32,33,34,35,37,38,
@@ -46,7 +54,7 @@ class PhoneNumberTest extends TestCase
      *
      * @return void
      */
-    public function phoneNumberMustContainNineDigitsTest()
+    public function testPhoneNumberMustContainNineDigits()
     {
         // Contém 9 dígitos
 
@@ -68,7 +76,7 @@ class PhoneNumberTest extends TestCase
     /**
      * Número do celular deve começar com 9;
      */
-    public function phoneNumberMusteStartWithNineTest()
+    public function testPhoneNumberMusteStartWithNine()
     {
         // Inicia com 9
 
@@ -94,7 +102,7 @@ class PhoneNumberTest extends TestCase
     /**
      * O segundo dígito deve ser > 6;
      */
-    public function secundNumberMustBeGreaterThanSixTest()
+    public function testSecundNumberMustBeGreaterThanSix()
     {
         $phone = 41984395789;
 
