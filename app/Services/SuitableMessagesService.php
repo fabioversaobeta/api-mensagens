@@ -28,7 +28,7 @@ class SuitableMessagesService
     {
         $this->geralRules = [
             'DDD' => [new BlockedUf(['SP'])],
-            'CELULAR' => [new Blacklist()],
+            'DDDCELULAR' => [new Blacklist()],
             'HORARIO_ENVIO' => new SchedulingAfter('19:59:59'),
             'MENSAGEM' => new CharacterLimit(140)
         ];
@@ -62,11 +62,12 @@ class SuitableMessagesService
         // Converte linhas do arquivo em uma Collection
         $messages = $convertLinesService->convertToColletion($lines, $headers);
 
+        $messages = $this->makePhoneNumber($messages);
+
         // Valida regras gerais para bloquear mensagens inválidas
         $filtered = $messages->validate($this->geralRules);
 
-        // has bug here - ddd is not validated by unique
-        $filtered = $filtered->sortBy('HORARIO_ENVIO')->unique('CELULAR');
+        $filtered = $filtered->sortBy('HORARIO_ENVIO')->unique('DDDCELULAR');
 
         // Valida regras para bloquear telefone inválido
         $phoneFiltered = $filtered->validate($this->phoneRules);
@@ -75,5 +76,18 @@ class SuitableMessagesService
         $brokered = $getBrokerService->brokers($phoneFiltered);
 
         return $brokered;
+    }
+
+    /**
+     * DDD + CELULAR
+     */
+    public function makePhoneNumber($list)
+    {
+        $collection = $list->map(function ($message) {
+            $message['DDDCELULAR'] = $message['DDD'].$message['CELULAR'];
+            return $message;
+        });
+
+        return $collection;
     }
 }
