@@ -40,19 +40,23 @@ c04096fe-2878-4485-886b-4a68a259bac5;43;940513739;NEXTEL;14:54:16;nibh fusce lac
 d81b2696-8b62-4b8b-af82-586ce0875ebc;21;983522711;TIM;16:42:48;sit amet eros suspendisse accumsan tortor quis turpis sed ante
 ```
 
+```
 Com o Postman, Insomnia ou equivalentes:
-Criar uma requisição
-**method: POST 
-**structured: Multipart Form
-**url: http://127.0.0.1:8000/api/suitableMessages
-**field: file
+Criar uma requisição preenchendo conforme imagem abaixo
+method: POST 
+structured: Multipart Form
+url: http://127.0.0.1:8000/api/suitableMessages
+field: file
+```
 
 <img src="./public/request.example.png">
 
 ## Ferramentas utilizadas
 
+```
 Language: PHP 7.3.15
 Framework: Laravel Framework 8.6.0
 IDE: Visual Studio Code 1.49.2
 SO: Windows 10 
 REST API Client: Insomnia 2020.4.1
+```
