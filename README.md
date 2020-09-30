@@ -61,3 +61,7 @@ IDE: Visual Studio Code 1.49.2
 SO: Windows 10 
 REST API Client: Insomnia 2020.4.1
 ```
+
+## Plugins
+
+guzzlehttp/guzzle 7.1
