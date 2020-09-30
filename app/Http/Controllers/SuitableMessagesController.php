@@ -23,15 +23,19 @@ class SuitableMessagesController extends Controller
      */
     public function __invoke(Request $request)
     {
+        // Verifica se arquivo existe
         if(!$request->hasFile('file')){
             return $this->formatReturn(true, [], 400, 'File not found');
         }
 
+        // Transforma arquivo em um array onde cada linha é uma string
         $fileContent = File::get($request->file('file'));
         $file = str_getcsv($fileContent, "\n");
 
+        // Chama serviço que irá validar cada mensagem e retornar o Broker
         $suitableMessages = $this->suitableService->suitables($file);
 
+        // retorna JSON com os dados
         return $this->cleanReturn($suitableMessages, 200);
     }
 }

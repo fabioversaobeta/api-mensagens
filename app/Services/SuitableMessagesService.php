@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Services\Utils\ConvertLinesService;
-use App\Services\Validators\ValidatorService;
 
 use App\Rules\Geral\BlockedUf;
 use App\Rules\Geral\SchedulingAfter;
@@ -48,7 +47,6 @@ class SuitableMessagesService
     {
         // Services
         $convertLinesService = new ConvertLinesService();
-        $validatorService = new ValidatorService();
         $getBrokerService = new GetBrokerService();
 
         // Nome dos campos do arquivo para serem mapeados
