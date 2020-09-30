@@ -4,6 +4,8 @@ namespace App\Rules\Geral;
 
 use Illuminate\Contracts\Validation\Rule;
 
+use App\Services\BlacklistService;
+
 class Blacklist implements Rule
 {
     private $blacklist;
@@ -14,11 +16,7 @@ class Blacklist implements Rule
      */
     public function __construct()
     {
-        $this->blacklist = [
-            '990171682',
-            '990171683',
-            '990171684'
-        ];
+        $this->blacklist = new BlacklistService;
     }
 
     /**
@@ -30,7 +28,7 @@ class Blacklist implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !in_array($value, $this->blacklist);
+        return !BlacklistService::blacklist($attribute, $value);
     }
 
     /**
