@@ -43,6 +43,7 @@ d81b2696-8b62-4b8b-af82-586ce0875ebc;21;983522711;TIM;16:42:48;sit amet eros sus
 ```
 Com o Postman, Insomnia ou equivalentes:
 Criar uma requisição preenchendo conforme imagem abaixo
+
 method: POST 
 structured: Multipart Form
 url: http://127.0.0.1:8000/api/suitableMessages
